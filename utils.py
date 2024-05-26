@@ -1,5 +1,5 @@
 import ctypes
-from ctypes import cdll, pointer, c_ulong, Structure
+from ctypes import cdll
 from numpy import zeros
 from math import ceil
 
@@ -22,7 +22,6 @@ def get_library_version():
     v_min = int(ver[-24:-16], 2) # Минорная версия
     v_rev = int(ver[-16:-8], 2) # Версия ревизии
     v_num = int(ver[-8:], 2) # Номер сборки
-
     print(f"Версия библиотеки: {v_maj}.{v_min}.{v_rev}.{v_num}")
     
     
@@ -56,13 +55,13 @@ def get_number_available_dev():
             print(f"устройство {dev_rec[i].devname.decode()}, ", end='')
             print(f"серийный номер {dev_rec[i].serial.decode()}, ", end='')
             if dev_rec[i].iface == 1:
-                print(f"USB")
+                print("USB")
 
             if dev_rec[i].iface == 2:
-                print(f"Ethernet")
+                print("Ethernet")
 
             if dev_rec[i].iface == 3:
-                print(f"PCI")
+                print("PCI")
                 
             available_devices.append(dev_rec[i])
     return available_devices
@@ -112,28 +111,42 @@ def get_device_info(hnd):
     print("Установлена связь со следующим модулем:")
     print(" Серийный номер:", info.SerNum.decode())
     print(" Наличие ЦАП: ", end='')
-    if info.devflags & 1: print("Да")
-    else: print("Нет")
-    print(" Наличие BlackFin: ", end='');
-    if info.devflags & 4: print("Да")
-    else: print("Нет")
-    print(" Наличие гальваноразвязки:" , end='');
-    if info.devflags & 2: print("Да")
-    else: print("Нет")
-    print(" Индустриальное исп.     :" , end='');
-    if info.devflags & 32778: print("Да")
-    else: print("Нет")
-    print(" Наличие интерф. PCI/PCIe:" , end='');
-    if info.devflags & 1024: print("Да")
-    else: print("Нет")
-    print(" Наличие интерф. USB     :" , end='');
-    if info.devflags & 256: print("Да")
-    else: print("Нет")
-    print(" Наличие интерф. Ethernet:" , end='');
-    if info.devflags & 512: print("Да")
-    else: print("Нет")
-    print(f" Версия ПЛИС: {info.fpga_ver >> 8}.{int(bin(info.fpga_ver)[-8:], 2)}");
-    print(" Версия PLDA:", info.plda_ver);
+    if info.devflags & 1:
+        print("Да")
+    else:
+        print("Нет")
+    print(" Наличие BlackFin: ", end='')
+    if info.devflags & 4:
+        print("Да")
+    else:
+        print("Нет")
+    print(" Наличие гальваноразвязки:" , end='')
+    if info.devflags & 2:
+        print("Да")
+    else:
+        print("Нет")
+    print(" Индустриальное исп.     :" , end='')
+    if info.devflags & 32778:
+        print("Да")
+    else:
+        print("Нет")
+    print(" Наличие интерф. PCI/PCIe:" , end='')
+    if info.devflags & 1024:
+        print("Да")
+    else:
+        print("Нет")
+    print(" Наличие интерф. USB     :" , end='')
+    if info.devflags & 256:
+        print("Да")
+    else:
+        print("Нет")
+    print(" Наличие интерф. Ethernet:" , end='')
+    if info.devflags & 512:
+        print("Да")
+    else:
+        print("Нет")
+    print(f" Версия ПЛИС: {info.fpga_ver >> 8}.{int(bin(info.fpga_ver)[-8:], 2)}")
+    print(" Версия PLDA:", info.plda_ver)
     if (info.mcu_firmware_ver != 0):
         print(" Версия прошивки ARM: {}.{}.{}.{}".format(
                (info.mcu_firmware_ver >> 24) & 0xFF,
@@ -411,7 +424,7 @@ def write_dac_data_cycle(hnd, data_dac1, data_dac2, start_stream=True):
         return None
     
     if snd_cnt < dac_arr_len * cnt_ch:
-        print(f'Отправлены не все слова')
+        print('Отправлены не все слова')
         return None
     
     # Делаем активным загруженный сигнал
@@ -474,7 +487,7 @@ def write_dac_data(hnd, data_dac1, data_dac2, start_stream=True):
         # Устанавливаем начальное значение на первом канале ЦАП
         ierr = x502.X502_AsyncOutDac(hnd, 0, ctypes.c_double(dac1_arr[0]), 3)
         if ierr != 0:
-            print(f'Ошибка {ierr}, {lu.errors.err_dict[ierr]}')
+            print(f'Ошибка {ierr}, {errors.err_dict[ierr]}')
             return None
     
     # Подготовка данных для второго канала ЦАП
@@ -490,7 +503,7 @@ def write_dac_data(hnd, data_dac1, data_dac2, start_stream=True):
         # Устанавливаем начальное значение на втором канале ЦАП
         ierr = x502.X502_AsyncOutDac(hnd, 1, ctypes.c_double(dac2_arr[0]), 3)
         if ierr != 0:
-            print(f'Ошибка {ierr}, {lu.errors.err_dict[ierr]}')
+            print(f'Ошибка {ierr}, {errors.err_dict[ierr]}')
             return None
         
     if cnt_ch == 2 and dac2_arr_len != dac1_arr_len:
@@ -524,7 +537,7 @@ def write_dac_data(hnd, data_dac1, data_dac2, start_stream=True):
         return None
     
     if snd_cnt < dac_arr_len * cnt_ch:
-        print(f'Отправлены не все слова')
+        print('Отправлены не все слова')
         return None
     
     if start_stream:
